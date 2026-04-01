@@ -1,0 +1,95 @@
+body {
+  margin: 0;
+  background: black;
+  font-family: Arial, sans-serif;
+  color: white;
+  overflow: hidden;
+}
+
+.hidden { display: none; }
+
+#splash {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.logo-container {
+  position: relative;
+}
+
+.logo {
+  width: 350px;
+  animation: glow 2s infinite alternate;
+  z-index: 3;
+}
+
+h1 {
+  margin-top: 20px;
+  color: orange;
+  letter-spacing: 3px;
+}
+
+@keyframes glow {
+  from { filter: drop-shadow(0 0 20px orange); }
+  to { filter: drop-shadow(0 0 60px red); }
+}
+
+/* Effet flash yeux */
+
+.eye-flash {
+  position: absolute;
+  top: 40%;
+  left: 50%;
+  width: 200px;
+  height: 80px;
+  transform: translate(-50%, -50%);
+  background: radial-gradient(circle, rgba(255,255,255,0.6), transparent 70%);
+  animation: flash 3s infinite;
+  pointer-events: none;
+}
+
+@keyframes flash {
+  0% { opacity: 0; }
+  20% { opacity: 0.8; }
+  40% { opacity: 0; }
+  100% { opacity: 0; }
+}
+
+#fireCanvas {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+}
+
+/* ENTRY SCREEN */
+
+#entry {
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.entry-box {
+  background: #111;
+  padding: 40px;
+  border-radius: 20px;
+  border: 1px solid orange;
+  text-align: center;
+}
+
+.entry-box button {
+  display: block;
+  margin: 15px auto;
+  padding: 10px 20px;
+  background: orange;
+  border: none;
+  border-radius: 10px;
+  color: white;
+  font-weight: bold;
+  cursor: pointer;
+}
