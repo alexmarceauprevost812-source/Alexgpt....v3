@@ -1,0 +1,43 @@
+const canvas = document.getElementById("fireCanvas");
+const ctx = canvas.getContext("2d");
+
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
+
+let particles = [];
+
+for (let i = 0; i < 100; i++) {
+  particles.push({
+    x: Math.random() * canvas.width,
+    y: canvas.height,
+    size: Math.random() * 5,
+    speed: Math.random() * 2 + 1
+  });
+}
+
+function drawFire() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+  particles.forEach(p => {
+    ctx.fillStyle = "rgba(255,100,0,0.5)";
+    ctx.beginPath();
+    ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+    ctx.fill();
+
+    p.y -= p.speed;
+    if (p.y < 0) {
+      p.y = canvas.height;
+      p.x = Math.random() * canvas.width;
+    }
+  });
+
+  requestAnimationFrame(drawFire);
+}
+
+drawFire();
+
+setTimeout(() => {
+  document.getElementById("splash").style.display = "none";
+  document.getElementById("entry").classList.remove("hidden");
+  document.body.style.overflow = "auto";
+}, 3000);
