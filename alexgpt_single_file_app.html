@@ -1,0 +1,1145 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AlexGPT</title>
+  <style>
+    :root {
+      --bg: #0b0b0b;
+      --panel: #151515;
+      --panel-2: #101010;
+      --text: #ffffff;
+      --muted: #bdbdbd;
+      --accent: #ff7a00;
+      --accent-soft: #2a1a0a;
+      --border: #2a2a2a;
+      --success: #18c964;
+      --danger: #ff4d4f;
+      --shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html, body {
+      margin: 0;
+      padding: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: Arial, sans-serif;
+      min-height: 100%;
+    }
+
+    body {
+      display: flex;
+      min-height: 100vh;
+    }
+
+    .app {
+      display: flex;
+      width: 100%;
+      min-height: 100vh;
+      background:
+        radial-gradient(circle at top right, rgba(255,122,0,0.08), transparent 28%),
+        linear-gradient(180deg, #0b0b0b 0%, #070707 100%);
+    }
+
+    .sidebar {
+      width: 250px;
+      background: rgba(21, 21, 21, 0.95);
+      border-right: 1px solid var(--border);
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      box-shadow: var(--shadow);
+      position: sticky;
+      top: 0;
+      height: 100vh;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 8px 16px;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 6px;
+      cursor: pointer;
+    }
+
+    .brand-badge {
+      width: 44px;
+      height: 44px;
+      border-radius: 14px;
+      background: linear-gradient(135deg, var(--accent), #ffb066);
+      color: #111;
+      display: grid;
+      place-items: center;
+      font-weight: 900;
+      box-shadow: 0 6px 18px rgba(255, 122, 0, 0.35);
+    }
+
+    .brand-text {
+      display: flex;
+      flex-direction: column;
+      line-height: 1.1;
+    }
+
+    .brand-text strong {
+      letter-spacing: 0.8px;
+      font-size: 18px;
+    }
+
+    .brand-text span {
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .nav-btn,
+    .topbar button,
+    .inputbar button,
+    .utility-btn,
+    .panel-btn {
+      background: #1b1b1b;
+      color: var(--text);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 12px 14px;
+      cursor: pointer;
+      transition: 0.2s ease;
+      font-size: 14px;
+    }
+
+    .nav-btn:hover,
+    .topbar button:hover,
+    .inputbar button:hover,
+    .utility-btn:hover,
+    .panel-btn:hover {
+      transform: translateY(-1px);
+      border-color: #4a4a4a;
+      background: #212121;
+    }
+
+    .nav-btn.active,
+    .topbar button.active {
+      background: var(--accent-soft);
+      border-color: rgba(255, 122, 0, 0.5);
+      color: #fff;
+    }
+
+    .facebook,
+    .send-btn,
+    .primary-btn {
+      background: var(--accent);
+      color: white;
+      font-weight: bold;
+      border: none;
+    }
+
+    .facebook:hover,
+    .send-btn:hover,
+    .primary-btn:hover {
+      filter: brightness(1.05);
+    }
+
+    .sidebar-footer {
+      margin-top: auto;
+      display: grid;
+      gap: 10px;
+      padding-top: 12px;
+      border-top: 1px solid var(--border);
+    }
+
+    .content {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      min-width: 0;
+    }
+
+    .topbar {
+      padding: 14px 16px;
+      border-bottom: 1px solid var(--border);
+      background: rgba(16, 16, 16, 0.9);
+      position: sticky;
+      top: 0;
+      backdrop-filter: blur(10px);
+      z-index: 5;
+    }
+
+    .topbar-row {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .tabs {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .status {
+      color: var(--muted);
+      font-size: 13px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .status-dot {
+      width: 9px;
+      height: 9px;
+      border-radius: 999px;
+      background: var(--success);
+      box-shadow: 0 0 10px rgba(24, 201, 100, 0.6);
+    }
+
+    .hero {
+      padding: 24px 20px 10px;
+    }
+
+    .hero-card {
+      border: 1px solid var(--border);
+      background: linear-gradient(180deg, rgba(255,122,0,0.08), rgba(255,255,255,0.01));
+      border-radius: 22px;
+      padding: 22px;
+      box-shadow: var(--shadow);
+    }
+
+    .hero-title {
+      margin: 0 0 8px;
+      font-size: 28px;
+      line-height: 1.1;
+    }
+
+    .hero-title span {
+      color: var(--accent);
+    }
+
+    .hero-text {
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.5;
+    }
+
+    .quick-actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: 16px;
+    }
+
+    .chat-shell {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      padding: 12px 20px 20px;
+      min-height: 0;
+    }
+
+    .messages {
+      flex: 1;
+      background: rgba(17, 17, 17, 0.9);
+      border: 1px solid var(--border);
+      border-radius: 22px;
+      padding: 18px;
+      overflow: auto;
+      box-shadow: var(--shadow);
+      min-height: 350px;
+      scroll-behavior: smooth;
+    }
+
+    .message {
+      display: flex;
+      gap: 12px;
+      align-items: flex-start;
+      margin-bottom: 16px;
+    }
+
+    .message:last-child {
+      margin-bottom: 0;
+    }
+
+    .avatar {
+      width: 38px;
+      height: 38px;
+      border-radius: 14px;
+      display: grid;
+      place-items: center;
+      font-weight: 700;
+      flex-shrink: 0;
+    }
+
+    .avatar.user {
+      background: #222;
+      border: 1px solid #383838;
+    }
+
+    .avatar.bot {
+      background: linear-gradient(135deg, var(--accent), #ffb066);
+      color: #151515;
+    }
+
+    .bubble {
+      max-width: 820px;
+      padding: 14px 16px;
+      border-radius: 18px;
+      line-height: 1.55;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+
+    .bubble.user {
+      background: #1a1a1a;
+      border: 1px solid #2c2c2c;
+    }
+
+    .bubble.bot {
+      background: #121212;
+      border: 1px solid rgba(255, 122, 0, 0.18);
+    }
+
+    .input-wrap {
+      margin-top: 14px;
+      border: 1px solid var(--border);
+      background: rgba(16, 16, 16, 0.96);
+      border-radius: 22px;
+      padding: 12px;
+      box-shadow: var(--shadow);
+    }
+
+    .inputbar,
+    .inline-form {
+      display: flex;
+      gap: 10px;
+      align-items: flex-end;
+      flex-wrap: wrap;
+    }
+
+    .inputbar textarea,
+    .panel-input,
+    .panel-search {
+      flex: 1;
+      min-height: 48px;
+      background: #1a1a1a;
+      color: white;
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 14px;
+      font: inherit;
+      outline: none;
+    }
+
+    .inputbar textarea {
+      min-height: 58px;
+      max-height: 180px;
+      resize: vertical;
+    }
+
+    .inputbar textarea:focus,
+    .panel-input:focus,
+    .panel-search:focus {
+      border-color: rgba(255, 122, 0, 0.5);
+      box-shadow: 0 0 0 3px rgba(255, 122, 0, 0.12);
+    }
+
+    .send-btn {
+      min-width: 120px;
+      padding: 14px 16px;
+      border-radius: 16px;
+      cursor: pointer;
+    }
+
+    .toolbar {
+      margin-top: 10px;
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    .toolbar small,
+    .muted {
+      color: var(--muted);
+    }
+
+    .toolbar-actions,
+    .panel-actions {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    .panel-screen {
+      padding: 20px;
+    }
+
+    .panel-card {
+      background: rgba(17, 17, 17, 0.92);
+      border: 1px solid var(--border);
+      border-radius: 22px;
+      padding: 20px;
+      box-shadow: var(--shadow);
+    }
+
+    .panel-card h2 {
+      margin-top: 0;
+    }
+
+    .panel-grid {
+      display: grid;
+      gap: 16px;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      margin-top: 16px;
+    }
+
+    .panel-list {
+      display: grid;
+      gap: 12px;
+      margin-top: 16px;
+    }
+
+    .panel-item,
+    .result-item {
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 14px;
+      background: #141414;
+    }
+
+    .panel-item strong,
+    .result-item strong {
+      display: block;
+      margin-bottom: 6px;
+    }
+
+    .list-row {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .mini-tag {
+      display: inline-block;
+      background: var(--accent-soft);
+      color: #fff;
+      border: 1px solid rgba(255, 122, 0, 0.4);
+      border-radius: 999px;
+      padding: 5px 10px;
+      font-size: 12px;
+      margin-top: 8px;
+    }
+
+    .toast {
+      position: fixed;
+      right: 18px;
+      bottom: 18px;
+      background: #151515;
+      border: 1px solid var(--border);
+      color: var(--text);
+      border-left: 4px solid var(--accent);
+      padding: 12px 14px;
+      border-radius: 14px;
+      box-shadow: var(--shadow);
+      z-index: 30;
+      opacity: 0;
+      transform: translateY(10px);
+      pointer-events: none;
+      transition: 0.25s ease;
+      max-width: 320px;
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    @media (max-width: 860px) {
+      .app {
+        flex-direction: column;
+      }
+
+      .sidebar {
+        width: 100%;
+        height: auto;
+        position: relative;
+      }
+
+      .content {
+        width: 100%;
+      }
+
+      .inputbar {
+        flex-direction: column;
+      }
+
+      .send-btn {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <aside class="sidebar">
+      <div class="brand" id="brandHomeBtn">
+        <div class="brand-badge">A</div>
+        <div class="brand-text">
+          <strong>ALEXGPT</strong>
+          <span>by Marceau</span>
+        </div>
+      </div>
+
+      <button class="nav-btn active" data-screen="chat">🏠 Accueil</button>
+      <button class="nav-btn" data-screen="profil">👤 Profil</button>
+      <button class="nav-btn" data-screen="amis">👥 Amis</button>
+      <button class="nav-btn" data-screen="groupe">👪 Groupe</button>
+      <button class="nav-btn" data-screen="rechercher">🔎 Rechercher</button>
+      <button class="nav-btn facebook" id="facebookBtn">f Facebook</button>
+
+      <div class="sidebar-footer">
+        <button class="utility-btn" id="saveChatBtn">💾 Sauvegarder</button>
+        <button class="utility-btn" id="clearChatBtn">🗑️ Effacer chat</button>
+      </div>
+    </aside>
+
+    <main class="content">
+      <header class="topbar">
+        <div class="topbar-row">
+          <div class="tabs">
+            <button class="active" data-screen="chat">Chat</button>
+            <button data-screen="profil">Profil</button>
+            <button data-screen="amis">Amis</button>
+            <button data-screen="groupe">Groupe</button>
+            <button data-screen="rechercher">Rechercher</button>
+          </div>
+          <div class="status">
+            <span class="status-dot"></span>
+            <span id="statusText">AlexGPT prêt</span>
+          </div>
+        </div>
+      </header>
+
+      <section id="screen-chat">
+        <div class="hero">
+          <div class="hero-card">
+            <h1 class="hero-title">Bienvenue sur <span>AlexGPT</span></h1>
+            <p class="hero-text">
+              Interface en un seul fichier. Tu peux l’ouvrir directement dans le navigateur ou la déployer telle quelle.
+              Tous les boutons principaux sont maintenant actifs.
+            </p>
+            <div class="quick-actions">
+              <button class="utility-btn quick-prompt">Présente-toi</button>
+              <button class="utility-btn quick-prompt">Crée un menu Facebook</button>
+              <button class="utility-btn quick-prompt">Donne-moi une idée d’application</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="chat-shell">
+          <div class="messages" id="messages"></div>
+
+          <div class="input-wrap">
+            <div class="inputbar">
+              <textarea id="messageInput" placeholder="Écris ton message à AlexGPT..."></textarea>
+              <button class="send-btn primary-btn" id="sendBtn">Envoyer</button>
+            </div>
+            <div class="toolbar">
+              <small>Entrée = envoyer • Shift+Entrée = nouvelle ligne</small>
+              <div class="toolbar-actions">
+                <button class="utility-btn" id="demoReplyBtn">⚡ Réponse démo</button>
+                <button class="utility-btn" id="exportBtn">⬇️ Export JSON</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="screen-profil" class="panel-screen hidden">
+        <div class="panel-card">
+          <h2>👤 Profil</h2>
+          <p class="muted">Modifie ton profil puis sauvegarde.</p>
+          <div class="panel-grid">
+            <div class="panel-item">
+              <strong>Nom affiché</strong>
+              <input id="profileNameInput" class="panel-input" placeholder="Ton nom" />
+            </div>
+            <div class="panel-item">
+              <strong>Projet</strong>
+              <input id="profileProjectInput" class="panel-input" placeholder="Nom du projet" />
+            </div>
+            <div class="panel-item">
+              <strong>Statut</strong>
+              <input id="profileStatusInput" class="panel-input" placeholder="Ton statut" />
+            </div>
+          </div>
+          <div class="panel-actions" style="margin-top:16px;">
+            <button class="panel-btn primary-btn" id="saveProfileBtn">Sauvegarder profil</button>
+            <button class="panel-btn" id="resetProfileBtn">Réinitialiser</button>
+            <button class="panel-btn" id="showProfileInChatBtn">Afficher dans le chat</button>
+          </div>
+          <div class="panel-list" id="profilePreview"></div>
+        </div>
+      </section>
+
+      <section id="screen-amis" class="panel-screen hidden">
+        <div class="panel-card">
+          <h2>👥 Amis</h2>
+          <p class="muted">Ajoute et supprime des amis.</p>
+          <div class="inline-form">
+            <input id="friendInput" class="panel-input" placeholder="Nom de l’ami" />
+            <button class="panel-btn primary-btn" id="addFriendBtn">Ajouter ami</button>
+            <button class="panel-btn" id="messageFriendsBtn">Message groupe</button>
+          </div>
+          <div class="panel-list" id="friendsList"></div>
+        </div>
+      </section>
+
+      <section id="screen-groupe" class="panel-screen hidden">
+        <div class="panel-card">
+          <h2>👪 Groupe</h2>
+          <p class="muted">Crée des groupes et ouvre-les dans le chat.</p>
+          <div class="inline-form">
+            <input id="groupInput" class="panel-input" placeholder="Nom du groupe" />
+            <button class="panel-btn primary-btn" id="addGroupBtn">Créer groupe</button>
+            <button class="panel-btn" id="openMainGroupBtn">Ouvrir principal</button>
+          </div>
+          <div class="panel-list" id="groupsList"></div>
+        </div>
+      </section>
+
+      <section id="screen-rechercher" class="panel-screen hidden">
+        <div class="panel-card">
+          <h2>🔎 Rechercher</h2>
+          <p class="muted">Recherche dans le chat, les amis et les groupes.</p>
+          <div class="inline-form">
+            <input id="searchInput" class="panel-search" placeholder="Tape un mot-clé" />
+            <button class="panel-btn primary-btn" id="runSearchBtn">Rechercher</button>
+            <button class="panel-btn" id="clearSearchBtn">Effacer</button>
+          </div>
+          <div class="panel-list" id="searchResults"></div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <script>
+    const STORAGE_KEY = 'alexgpt-chat-history-v2';
+    const PROFILE_KEY = 'alexgpt-profile-v1';
+    const FRIENDS_KEY = 'alexgpt-friends-v1';
+    const GROUPS_KEY = 'alexgpt-groups-v1';
+
+    const messagesEl = document.getElementById('messages');
+    const messageInput = document.getElementById('messageInput');
+    const sendBtn = document.getElementById('sendBtn');
+    const demoReplyBtn = document.getElementById('demoReplyBtn');
+    const clearChatBtn = document.getElementById('clearChatBtn');
+    const saveChatBtn = document.getElementById('saveChatBtn');
+    const exportBtn = document.getElementById('exportBtn');
+    const facebookBtn = document.getElementById('facebookBtn');
+    const quickPrompts = document.querySelectorAll('.quick-prompt');
+    const navButtons = document.querySelectorAll('[data-screen]');
+    const toastEl = document.getElementById('toast');
+    const statusText = document.getElementById('statusText');
+    const brandHomeBtn = document.getElementById('brandHomeBtn');
+
+    const profileNameInput = document.getElementById('profileNameInput');
+    const profileProjectInput = document.getElementById('profileProjectInput');
+    const profileStatusInput = document.getElementById('profileStatusInput');
+    const saveProfileBtn = document.getElementById('saveProfileBtn');
+    const resetProfileBtn = document.getElementById('resetProfileBtn');
+    const showProfileInChatBtn = document.getElementById('showProfileInChatBtn');
+    const profilePreview = document.getElementById('profilePreview');
+
+    const friendInput = document.getElementById('friendInput');
+    const addFriendBtn = document.getElementById('addFriendBtn');
+    const messageFriendsBtn = document.getElementById('messageFriendsBtn');
+    const friendsList = document.getElementById('friendsList');
+
+    const groupInput = document.getElementById('groupInput');
+    const addGroupBtn = document.getElementById('addGroupBtn');
+    const openMainGroupBtn = document.getElementById('openMainGroupBtn');
+    const groupsList = document.getElementById('groupsList');
+
+    const searchInput = document.getElementById('searchInput');
+    const runSearchBtn = document.getElementById('runSearchBtn');
+    const clearSearchBtn = document.getElementById('clearSearchBtn');
+    const searchResults = document.getElementById('searchResults');
+
+    let chatHistory = loadState(STORAGE_KEY, []);
+    let profile = loadState(PROFILE_KEY, {
+      name: 'Marceau',
+      project: 'AlexGPT',
+      status: 'En ligne'
+    });
+    let friends = loadState(FRIENDS_KEY, ['Ami 1', 'Ami 2']);
+    let groups = loadState(GROUPS_KEY, ['Groupe principal', 'Salon projet']);
+
+    if (chatHistory.length === 0) {
+      chatHistory = [
+        {
+          role: 'bot',
+          text: 'Salut 👋 Je suis AlexGPT. Interface prête en un seul fichier. Tous les boutons principaux sont actifs.'
+        }
+      ];
+      saveState(STORAGE_KEY, chatHistory);
+    }
+
+    hydrateProfileInputs();
+    renderProfilePreview();
+    renderFriends();
+    renderGroups();
+    renderMessages();
+
+    function loadState(key, fallback) {
+      try {
+        const raw = localStorage.getItem(key);
+        return raw ? JSON.parse(raw) : fallback;
+      } catch (error) {
+        return fallback;
+      }
+    }
+
+    function saveState(key, value) {
+      localStorage.setItem(key, JSON.stringify(value));
+    }
+
+    function showToast(text) {
+      toastEl.textContent = text;
+      toastEl.classList.add('show');
+      clearTimeout(showToast.timer);
+      showToast.timer = setTimeout(() => toastEl.classList.remove('show'), 2200);
+    }
+
+    function setStatus(text) {
+      statusText.textContent = text;
+    }
+
+    function addMessage(role, text) {
+      chatHistory.push({ role, text });
+      saveState(STORAGE_KEY, chatHistory);
+      renderMessages();
+    }
+
+    function renderMessages() {
+      messagesEl.innerHTML = '';
+
+      chatHistory.forEach((msg) => {
+        const wrap = document.createElement('div');
+        wrap.className = 'message';
+
+        const avatar = document.createElement('div');
+        avatar.className = 'avatar ' + (msg.role === 'user' ? 'user' : 'bot');
+        avatar.textContent = msg.role === 'user' ? 'U' : 'A';
+
+        const bubble = document.createElement('div');
+        bubble.className = 'bubble ' + (msg.role === 'user' ? 'user' : 'bot');
+        bubble.textContent = msg.text;
+
+        wrap.appendChild(avatar);
+        wrap.appendChild(bubble);
+        messagesEl.appendChild(wrap);
+      });
+
+      messagesEl.scrollTop = messagesEl.scrollHeight;
+    }
+
+    function buildBotReply(userText) {
+      const text = userText.toLowerCase();
+
+      if (text.includes('bonjour') || text.includes('salut')) {
+        return 'Salut 👋 Ravi de te voir sur AlexGPT. Dis-moi ce que tu veux construire.';
+      }
+
+      if (text.includes('facebook')) {
+        return 'Le bouton Facebook est actif. Il ouvre Facebook dans un nouvel onglet.';
+      }
+
+      if (text.includes('profil')) {
+        return `Profil actif ✅ Nom: ${profile.name} • Projet: ${profile.project} • Statut: ${profile.status}`;
+      }
+
+      if (text.includes('amis')) {
+        return `Tu as ${friends.length} ami(s) enregistrés.`;
+      }
+
+      if (text.includes('groupe')) {
+        return `Tu as ${groups.length} groupe(s) enregistrés.`;
+      }
+
+      if (text.includes('code') || text.includes('html')) {
+        return 'Ton app reste dans un seul fichier HTML avec CSS et JavaScript intégrés.';
+      }
+
+      if (text.includes('api') || text.includes('chatgpt')) {
+        return 'Pour transformer cette interface en vrai assistant IA, branche une API côté serveur.';
+      }
+
+      return 'AlexGPT a bien reçu ton message. Cette version répond en démo locale, mais l’interface complète est active.';
+    }
+
+    function handleSend() {
+      const text = messageInput.value.trim();
+      if (!text) return;
+
+      addMessage('user', text);
+      messageInput.value = '';
+      setStatus('Réponse en cours...');
+
+      setTimeout(() => {
+        addMessage('bot', buildBotReply(text));
+        setStatus('AlexGPT prêt');
+      }, 300);
+    }
+
+    function exportChat() {
+      const blob = new Blob([JSON.stringify(chatHistory, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'alexgpt-chat.json';
+      a.click();
+      URL.revokeObjectURL(url);
+      showToast('Export JSON terminé');
+    }
+
+    function switchScreen(screen) {
+      document.querySelectorAll('section[id^="screen-"]').forEach(section => {
+        section.classList.add('hidden');
+      });
+
+      const target = document.getElementById('screen-' + screen);
+      if (target) target.classList.remove('hidden');
+
+      navButtons.forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.screen === screen);
+      });
+
+      const labels = {
+        chat: 'Accueil',
+        profil: 'Profil',
+        amis: 'Amis',
+        groupe: 'Groupe',
+        rechercher: 'Recherche'
+      };
+      setStatus(labels[screen] + ' ouvert');
+    }
+
+    function hydrateProfileInputs() {
+      profileNameInput.value = profile.name;
+      profileProjectInput.value = profile.project;
+      profileStatusInput.value = profile.status;
+    }
+
+    function renderProfilePreview() {
+      profilePreview.innerHTML = `
+        <div class="panel-item"><strong>Nom</strong>${profile.name}</div>
+        <div class="panel-item"><strong>Projet</strong>${profile.project}</div>
+        <div class="panel-item"><strong>Statut</strong>${profile.status}<span class="mini-tag">profil actif</span></div>
+      `;
+    }
+
+    function saveProfile() {
+      profile = {
+        name: profileNameInput.value.trim() || 'Marceau',
+        project: profileProjectInput.value.trim() || 'AlexGPT',
+        status: profileStatusInput.value.trim() || 'En ligne'
+      };
+      saveState(PROFILE_KEY, profile);
+      renderProfilePreview();
+      showToast('Profil sauvegardé');
+      setStatus('Profil sauvegardé');
+    }
+
+    function resetProfile() {
+      profile = {
+        name: 'Marceau',
+        project: 'AlexGPT',
+        status: 'En ligne'
+      };
+      saveState(PROFILE_KEY, profile);
+      hydrateProfileInputs();
+      renderProfilePreview();
+      showToast('Profil réinitialisé');
+      setStatus('Profil réinitialisé');
+    }
+
+    function renderFriends() {
+      friendsList.innerHTML = '';
+      if (!friends.length) {
+        friendsList.innerHTML = '<div class="panel-item"><strong>Aucun ami</strong>Ajoute un ami avec le bouton ci-dessus.</div>';
+        return;
+      }
+
+      friends.forEach((friend, index) => {
+        const item = document.createElement('div');
+        item.className = 'panel-item';
+        item.innerHTML = `
+          <div class="list-row">
+            <div>
+              <strong>${friend}</strong>
+              <span class="muted">Contact disponible</span>
+            </div>
+            <div class="panel-actions">
+              <button class="panel-btn" data-message-friend="${index}">Message</button>
+              <button class="panel-btn" data-remove-friend="${index}">Supprimer</button>
+            </div>
+          </div>
+        `;
+        friendsList.appendChild(item);
+      });
+    }
+
+    function addFriend() {
+      const name = friendInput.value.trim();
+      if (!name) {
+        showToast('Entre un nom d’ami');
+        return;
+      }
+      friends.push(name);
+      saveState(FRIENDS_KEY, friends);
+      friendInput.value = '';
+      renderFriends();
+      showToast('Ami ajouté');
+      setStatus('Ami ajouté');
+    }
+
+    function removeFriend(index) {
+      const removed = friends.splice(index, 1);
+      saveState(FRIENDS_KEY, friends);
+      renderFriends();
+      showToast((removed[0] || 'Ami') + ' supprimé');
+      setStatus('Ami supprimé');
+    }
+
+    function renderGroups() {
+      groupsList.innerHTML = '';
+      if (!groups.length) {
+        groupsList.innerHTML = '<div class="panel-item"><strong>Aucun groupe</strong>Crée un groupe avec le bouton ci-dessus.</div>';
+        return;
+      }
+
+      groups.forEach((group, index) => {
+        const item = document.createElement('div');
+        item.className = 'panel-item';
+        item.innerHTML = `
+          <div class="list-row">
+            <div>
+              <strong>${group}</strong>
+              <span class="muted">Groupe disponible</span>
+            </div>
+            <div class="panel-actions">
+              <button class="panel-btn" data-open-group="${index}">Ouvrir</button>
+              <button class="panel-btn" data-remove-group="${index}">Supprimer</button>
+            </div>
+          </div>
+        `;
+        groupsList.appendChild(item);
+      });
+    }
+
+    function addGroup() {
+      const name = groupInput.value.trim();
+      if (!name) {
+        showToast('Entre un nom de groupe');
+        return;
+      }
+      groups.push(name);
+      saveState(GROUPS_KEY, groups);
+      groupInput.value = '';
+      renderGroups();
+      showToast('Groupe créé');
+      setStatus('Groupe créé');
+    }
+
+    function removeGroup(index) {
+      const removed = groups.splice(index, 1);
+      saveState(GROUPS_KEY, groups);
+      renderGroups();
+      showToast((removed[0] || 'Groupe') + ' supprimé');
+      setStatus('Groupe supprimé');
+    }
+
+    function runSearch() {
+      const query = searchInput.value.trim().toLowerCase();
+      searchResults.innerHTML = '';
+
+      if (!query) {
+        searchResults.innerHTML = '<div class="result-item"><strong>Recherche vide</strong>Entre un mot-clé.</div>';
+        return;
+      }
+
+      const results = [];
+
+      chatHistory.forEach(msg => {
+        if (msg.text.toLowerCase().includes(query)) {
+          results.push({ type: 'Chat', text: msg.text });
+        }
+      });
+
+      friends.forEach(friend => {
+        if (friend.toLowerCase().includes(query)) {
+          results.push({ type: 'Ami', text: friend });
+        }
+      });
+
+      groups.forEach(group => {
+        if (group.toLowerCase().includes(query)) {
+          results.push({ type: 'Groupe', text: group });
+        }
+      });
+
+      if (!results.length) {
+        searchResults.innerHTML = '<div class="result-item"><strong>Aucun résultat</strong>Essaie un autre mot.</div>';
+        setStatus('Aucun résultat');
+        return;
+      }
+
+      results.forEach(result => {
+        const item = document.createElement('div');
+        item.className = 'result-item';
+        item.innerHTML = `<strong>${result.type}</strong>${result.text}`;
+        searchResults.appendChild(item);
+      });
+
+      showToast(results.length + ' résultat(s) trouvés');
+      setStatus(results.length + ' résultat(s)');
+    }
+
+    sendBtn.addEventListener('click', handleSend);
+
+    messageInput.addEventListener('keydown', (event) => {
+      if (event.key === 'Enter' && !event.shiftKey) {
+        event.preventDefault();
+        handleSend();
+      }
+    });
+
+    demoReplyBtn.addEventListener('click', () => {
+      addMessage('bot', 'Réponse démo ⚡ Tous les boutons de l’interface sont actifs.');
+      showToast('Réponse démo ajoutée');
+    });
+
+    clearChatBtn.addEventListener('click', () => {
+      chatHistory = [
+        { role: 'bot', text: 'Historique effacé ✅ Tu peux recommencer une nouvelle conversation.' }
+      ];
+      saveState(STORAGE_KEY, chatHistory);
+      renderMessages();
+      switchScreen('chat');
+      showToast('Chat effacé');
+    });
+
+    saveChatBtn.addEventListener('click', () => {
+      saveState(STORAGE_KEY, chatHistory);
+      addMessage('bot', 'Conversation sauvegardée en local ✅');
+      showToast('Conversation sauvegardée');
+    });
+
+    exportBtn.addEventListener('click', exportChat);
+
+    facebookBtn.addEventListener('click', () => {
+      window.open('https://www.facebook.com/', '_blank');
+      showToast('Ouverture de Facebook');
+      setStatus('Facebook ouvert');
+    });
+
+    quickPrompts.forEach(btn => {
+      btn.addEventListener('click', () => {
+        messageInput.value = btn.textContent;
+        handleSend();
+      });
+    });
+
+    navButtons.forEach(btn => {
+      btn.addEventListener('click', () => switchScreen(btn.dataset.screen));
+    });
+
+    brandHomeBtn.addEventListener('click', () => switchScreen('chat'));
+
+    saveProfileBtn.addEventListener('click', saveProfile);
+    resetProfileBtn.addEventListener('click', resetProfile);
+    showProfileInChatBtn.addEventListener('click', () => {
+      saveProfile();
+      switchScreen('chat');
+      addMessage('bot', `Profil actuel 👤 ${profile.name} • Projet: ${profile.project} • Statut: ${profile.status}`);
+    });
+
+    addFriendBtn.addEventListener('click', addFriend);
+    friendInput.addEventListener('keydown', (event) => {
+      if (event.key === 'Enter') addFriend();
+    });
+    messageFriendsBtn.addEventListener('click', () => {
+      switchScreen('chat');
+      addMessage('bot', `Message groupe envoyé à ${friends.length} ami(s).`);
+      showToast('Message amis simulé');
+    });
+
+    friendsList.addEventListener('click', (event) => {
+      const messageIndex = event.target.getAttribute('data-message-friend');
+      const removeIndex = event.target.getAttribute('data-remove-friend');
+
+      if (messageIndex !== null) {
+        switchScreen('chat');
+        addMessage('bot', `Discussion ouverte avec ${friends[Number(messageIndex)]}.`);
+        showToast('Discussion ami ouverte');
+      }
+
+      if (removeIndex !== null) {
+        removeFriend(Number(removeIndex));
+      }
+    });
+
+    addGroupBtn.addEventListener('click', addGroup);
+    groupInput.addEventListener('keydown', (event) => {
+      if (event.key === 'Enter') addGroup();
+    });
+    openMainGroupBtn.addEventListener('click', () => {
+      switchScreen('chat');
+      addMessage('bot', 'Groupe principal ouvert dans le chat.');
+      showToast('Groupe principal ouvert');
+    });
+
+    groupsList.addEventListener('click', (event) => {
+      const openIndex = event.target.getAttribute('data-open-group');
+      const removeIndex = event.target.getAttribute('data-remove-group');
+
+      if (openIndex !== null) {
+        switchScreen('chat');
+        addMessage('bot', `Groupe ouvert: ${groups[Number(openIndex)]}.`);
+        showToast('Groupe ouvert');
+      }
+
+      if (removeIndex !== null) {
+        removeGroup(Number(removeIndex));
+      }
+    });
+
+    runSearchBtn.addEventListener('click', runSearch);
+    searchInput.addEventListener('keydown', (event) => {
+      if (event.key === 'Enter') runSearch();
+    });
+    clearSearchBtn.addEventListener('click', () => {
+      searchInput.value = '';
+      searchResults.innerHTML = '';
+      showToast('Recherche effacée');
+      setStatus('Recherche effacée');
+    });
+  </script>
+</body>
+</html>
